@@ -1,8 +1,9 @@
-package com.cloudcraftgaming.api.endpoints;
+package com.cloudcraftgaming.api.endpoints.v1;
 
 import com.cloudcraftgaming.api.utils.ResponseUtils;
 import com.cloudcraftgaming.discal.api.database.DatabaseManager;
 import com.cloudcraftgaming.discal.api.object.GuildSettings;
+import org.json.JSONException;
 import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
@@ -38,6 +39,9 @@ public class GuildEndpoint {
 			body.put("MAX_CALENDARS", settings.getMaxCalendars());
 
 			response.body(body.toString());
+		} catch (JSONException e) {
+			e.printStackTrace();
+			halt(400, "Bad Request");
 		} catch (Exception e) {
 			e.printStackTrace();
 			halt(500, "Internal Server Error");
@@ -72,15 +76,18 @@ public class GuildEndpoint {
 			if (body.has("MAX_CALENDARS"))
 				settings.setMaxCalendars(body.getInt("MAX_CALENDARS"));
 
-			response.type("application/json");
-
 			if (DatabaseManager.getManager().updateSettings(settings)) {
+				response.type("application/json");
 				response.status(200);
 				response.body(ResponseUtils.getJsonResponseMessage("Successfully updated settings!"));
 			} else {
+				response.type("application/json");
 				response.status(500);
 				response.body(ResponseUtils.getJsonResponseMessage("Failed to update settings!"));
 			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			halt(400, "Bad Request");
 		} catch (Exception e) {
 			e.printStackTrace();
 			halt(500, "Internal Server Error");

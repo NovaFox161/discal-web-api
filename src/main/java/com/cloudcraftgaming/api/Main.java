@@ -1,6 +1,7 @@
 package com.cloudcraftgaming.api;
 
-import com.cloudcraftgaming.api.endpoints.GuildEndpoint;
+import com.cloudcraftgaming.api.endpoints.v1.AnnouncementEndpoint;
+import com.cloudcraftgaming.api.endpoints.v1.GuildEndpoint;
 import com.cloudcraftgaming.discal.api.database.DatabaseManager;
 import com.cloudcraftgaming.discal.api.file.ReadFile;
 import com.cloudcraftgaming.discal.api.object.BotSettings;
@@ -39,13 +40,17 @@ public class Main {
 			}
 		});
 
-		path("/api/discal", () -> {
+		path("/api/v1/discal", () -> {
 			before("/*", (q, a) -> System.out.println("Received API call"));
 			path("/guild", () -> {
 				path("/settings", () -> {
 					post("/get", GuildEndpoint::getSettings);
 					post("/update", GuildEndpoint::updateSettings);
 				});
+			});
+			path("/announcement", () -> {
+				post("/get", AnnouncementEndpoint::getAnnouncement);
+				post("/create", AnnouncementEndpoint::createAnnouncement);
 			});
 		});
 	}

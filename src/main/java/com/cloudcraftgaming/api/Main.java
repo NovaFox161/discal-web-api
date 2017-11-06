@@ -29,11 +29,13 @@ public class Main {
 			if (!request.requestMethod().equalsIgnoreCase("POST")) {
 				System.out.println("Denied '" + request.requestMethod() + "' access from: " + request.ip());
 				halt(405, "Method not allowed");
-			} else {
-				//Check authorization
-				if (request.headers().contains("Authorization") && !request.headers("Authorization").equalsIgnoreCase("API_KEY")) {
-					halt(401, "Unauthorized");
-				}
+			}
+			//Check authorization
+			if (request.headers().contains("Authorization") && !request.headers("Authorization").equals("API_KEY")) {
+				halt(401, "Unauthorized");
+			}
+			if (!request.contentType().equalsIgnoreCase("application/json")) {
+				halt(400, "Bad Request");
 			}
 		});
 
@@ -42,6 +44,7 @@ public class Main {
 			path("/guild", () -> {
 				path("/settings", () -> {
 					post("/get", GuildEndpoint::getSettings);
+					post("/update", GuildEndpoint::updateSettings);
 				});
 			});
 		});

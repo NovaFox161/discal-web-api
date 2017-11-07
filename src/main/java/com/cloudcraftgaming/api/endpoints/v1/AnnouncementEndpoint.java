@@ -163,7 +163,7 @@ public class AnnouncementEndpoint {
 				if (DatabaseManager.getManager().deleteAnnouncement(announcementId)) {
 					response.type("application/json");
 					response.status(200);
-					response.body("Successfully deleted announcement");
+					response.body(ResponseUtils.getJsonResponseMessage("Successfully deleted announcement"));
 				} else {
 					response.type("application/json");
 					response.status(500);

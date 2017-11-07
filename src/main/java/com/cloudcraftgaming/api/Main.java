@@ -56,6 +56,9 @@ public class Main {
 				post("/delete", AnnouncementEndpoint::deleteAnnouncement);
 				post("/list", AnnouncementEndpoint::listAnnouncements);
 			});
+			path("/calendar", () -> {
+				post("/get", CalendarEndpoint::getCalendar);
+			});
 		});
 	}
 }

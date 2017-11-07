@@ -58,6 +58,7 @@ public class Main {
 			});
 			path("/calendar", () -> {
 				post("/get", CalendarEndpoint::getCalendar);
+				post("/list", CalendarEndpoint::listCalendars);
 			});
 		});
 	}

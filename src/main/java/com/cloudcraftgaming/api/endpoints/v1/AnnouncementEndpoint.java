@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static spark.Spark.halt;
@@ -174,6 +175,74 @@ public class AnnouncementEndpoint {
 				response.status(404);
 				response.body(ResponseUtils.getJsonResponseMessage("Announcement not found"));
 			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			halt(400, "Bad Request");
+		} catch (Exception e) {
+			e.printStackTrace();
+			halt(500, "Internal Server Error");
+		}
+		return response.body();
+	}
+
+	public static String listAnnouncements(Request request, Response response) {
+		try {
+			JSONObject jsonMain = new JSONObject(request.body());
+			String guildId = jsonMain.getString("GUILD_ID");
+
+			Integer amount = jsonMain.getInt("AMOUNT");
+
+			ArrayList<String> announcements = new ArrayList<>();
+			if (amount == -1) {
+				for (Announcement a : DatabaseManager.getManager().getAnnouncements(Long.valueOf(guildId))) {
+					JSONObject obj = new JSONObject();
+					obj.put("GUILD_ID", a.getGuildId());
+					obj.put("ANNOUNCEMENT_ID", a.getAnnouncementId().toString());
+					obj.put("ANNOUNCEMENT_CHANNEL", a.getAnnouncementChannelId());
+					obj.put("EVENT_ID", a.getEventId());
+					obj.put("EVENT_COLOR", a.getEventColor().name());
+					obj.put("TYPE", a.getAnnouncementType().name());
+					obj.put("HOURS", a.getHoursBefore());
+					obj.put("MINUTES", a.getMinutesBefore());
+					obj.put("INFO", a.getInfo());
+					obj.put("SUBSCRIBERS_ROLE", a.getSubscriberRoleIds());
+					obj.put("SUBSCRIBERS_USER", a.getSubscriberUserIds());
+
+					announcements.add(obj.toString());
+				}
+			} else {
+				int i = 0;
+				for (Announcement a : DatabaseManager.getManager().getAnnouncements(Long.valueOf(guildId))) {
+					if (i < amount) {
+						JSONObject obj = new JSONObject();
+						obj.put("GUILD_ID", a.getGuildId());
+						obj.put("ANNOUNCEMENT_ID", a.getAnnouncementId().toString());
+						obj.put("ANNOUNCEMENT_CHANNEL", a.getAnnouncementChannelId());
+						obj.put("EVENT_ID", a.getEventId());
+						obj.put("EVENT_COLOR", a.getEventColor().name());
+						obj.put("TYPE", a.getAnnouncementType().name());
+						obj.put("HOURS", a.getHoursBefore());
+						obj.put("MINUTES", a.getMinutesBefore());
+						obj.put("INFO", a.getInfo());
+						obj.put("SUBSCRIBERS_ROLE", a.getSubscriberRoleIds());
+						obj.put("SUBSCRIBERS_USER", a.getSubscriberUserIds());
+
+						announcements.add(obj.toString());
+						i++;
+					} else {
+						break;
+					}
+				}
+			}
+
+			JSONObject body = new JSONObject();
+			body.put("AMOUNT", announcements.size());
+			body.put("ANNOUNCEMENTS", announcements);
+
+			response.type("application/json");
+			response.status(200);
+			response.body(body.toString());
+
 		} catch (JSONException e) {
 			e.printStackTrace();
 			halt(400, "Bad Request");

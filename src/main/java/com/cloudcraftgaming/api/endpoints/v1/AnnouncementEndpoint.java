@@ -19,6 +19,7 @@ import static spark.Spark.halt;
  * Website: www.cloudcraftgaming.com
  * For Project: DisCalWebAPI
  */
+@SuppressWarnings("ThrowableNotThrown")
 public class AnnouncementEndpoint {
 	public static String getAnnouncement(Request request, Response response) {
 		try {
@@ -86,6 +87,56 @@ public class AnnouncementEndpoint {
 				response.type("application/json");
 				response.status(500);
 				response.body(ResponseUtils.getJsonResponseMessage("Internal Server Error"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			halt(400, "Bad Request");
+		} catch (Exception e) {
+			e.printStackTrace();
+			halt(500, "Internal Server Error");
+		}
+		return response.body();
+	}
+
+	public static String updateAnnouncement(Request request, Response response) {
+		try {
+			JSONObject jsonMain = new JSONObject(request.body());
+			String guildId = jsonMain.getString("GUILD_ID");
+			String announcementId = jsonMain.getString("ANNOUNCEMENT_ID");
+
+			Announcement a = DatabaseManager.getManager().getAnnouncement(UUID.fromString(announcementId), Long.valueOf(guildId));
+
+			if (a != null) {
+
+				JSONObject body = new JSONObject(request.body());
+
+				if (body.has("ANNOUNCEMENT_CHANNEL"))
+					a.setAnnouncementChannelId(body.getString("ANNOUNCEMENT_CHANNEL"));
+				if (body.has("EVENT_ID"))
+					a.setEventId(body.getString("EVENT_ID"));
+				if (body.has("EVENT_COLOR"))
+					a.setEventColor(EventColor.fromNameOrHexOrID(body.getString("EVENT_COLOR")));
+				if (body.has("TYPE"))
+					a.setAnnouncementType(AnnouncementType.fromValue(body.getString("TYPE")));
+				if (body.has("HOURS"))
+					a.setHoursBefore(body.getInt("HOURS"));
+				if (body.has("MINUTES"))
+					a.setMinutesBefore(body.getInt("MINUTES"));
+				if (body.has("INFO"))
+					a.setInfo(body.getString("INFO"));
+
+				if (DatabaseManager.getManager().updateAnnouncement(a)) {
+					response.type("application/json");
+					response.status(200);
+					response.body(ResponseUtils.getJsonResponseMessage("Announcement successfully updated!"));
+				} else {
+					response.type("application/json");
+					response.status(500);
+					response.body(ResponseUtils.getJsonResponseMessage("Internal Server Error"));
+				}
+			} else {
+				response.status(404);
+				response.body(ResponseUtils.getJsonResponseMessage("Announcement not found"));
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

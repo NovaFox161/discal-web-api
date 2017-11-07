@@ -13,10 +13,11 @@ import static spark.Spark.*;
  * Website: www.cloudcraftgaming.com
  * For Project: DisCalWebAPI
  */
+@SuppressWarnings("ThrowableNotThrown")
 public class Main {
-	static BotSettings settings;
+	@SuppressWarnings("FieldCanBeLocal")
+	private static BotSettings settings;
 
-	@SuppressWarnings("ThrowableNotThrown")
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			throw new NullPointerException("No bot settings provided!");
@@ -41,7 +42,7 @@ public class Main {
 		});
 
 		path("/api/v1/discal", () -> {
-			before("/*", (q, a) -> System.out.println("Received API call"));
+			before("/*", (q, a) -> System.out.println("Received API call from: " + q.ip() + "; Host:" + q.host()));
 			path("/guild", () -> {
 				path("/settings", () -> {
 					post("/get", GuildEndpoint::getSettings);
@@ -51,6 +52,7 @@ public class Main {
 			path("/announcement", () -> {
 				post("/get", AnnouncementEndpoint::getAnnouncement);
 				post("/create", AnnouncementEndpoint::createAnnouncement);
+				post("/update", AnnouncementEndpoint::updateAnnouncement);
 			});
 		});
 	}

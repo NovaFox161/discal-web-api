@@ -82,7 +82,11 @@ public class AnnouncementEndpoint {
 			if (DatabaseManager.getManager().updateAnnouncement(a)) {
 				response.type("application/json");
 				response.status(200);
-				response.body(ResponseUtils.getJsonResponseMessage("Announcement successfully created!"));
+
+				JSONObject responseBody = new JSONObject();
+				responseBody.put("Message", "Successfully updated announcement!");
+				responseBody.put("ANNOUNCEMENT_ID", a.getAnnouncementId().toString());
+				response.body(responseBody.toString());
 			} else {
 				response.type("application/json");
 				response.status(500);
@@ -135,6 +139,38 @@ public class AnnouncementEndpoint {
 					response.body(ResponseUtils.getJsonResponseMessage("Internal Server Error"));
 				}
 			} else {
+				response.type("application/json");
+				response.status(404);
+				response.body(ResponseUtils.getJsonResponseMessage("Announcement not found"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			halt(400, "Bad Request");
+		} catch (Exception e) {
+			e.printStackTrace();
+			halt(500, "Internal Server Error");
+		}
+		return response.body();
+	}
+
+	public static String deleteAnnouncement(Request request, Response response) {
+		try {
+			JSONObject jsonMain = new JSONObject(request.body());
+			String guildId = jsonMain.getString("GUILD_ID");
+			String announcementId = jsonMain.getString("ANNOUNCEMENT_ID");
+
+			if (DatabaseManager.getManager().getAnnouncement(UUID.fromString(announcementId), Long.valueOf(guildId)) != null) {
+				if (DatabaseManager.getManager().deleteAnnouncement(announcementId)) {
+					response.type("application/json");
+					response.status(200);
+					response.body("Successfully deleted announcement");
+				} else {
+					response.type("application/json");
+					response.status(500);
+					response.body(ResponseUtils.getJsonResponseMessage("Internal Server Error"));
+				}
+			} else {
+				response.type("application/json");
 				response.status(404);
 				response.body(ResponseUtils.getJsonResponseMessage("Announcement not found"));
 			}

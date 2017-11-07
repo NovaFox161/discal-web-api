@@ -53,6 +53,7 @@ public class Main {
 				post("/get", AnnouncementEndpoint::getAnnouncement);
 				post("/create", AnnouncementEndpoint::createAnnouncement);
 				post("/update", AnnouncementEndpoint::updateAnnouncement);
+				post("/delete", AnnouncementEndpoint::deleteAnnouncement);
 			});
 		});
 	}

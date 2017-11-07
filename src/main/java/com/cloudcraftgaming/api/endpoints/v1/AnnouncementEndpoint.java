@@ -192,7 +192,7 @@ public class AnnouncementEndpoint {
 
 			Integer amount = jsonMain.getInt("AMOUNT");
 
-			ArrayList<String> announcements = new ArrayList<>();
+			ArrayList<JSONObject> announcements = new ArrayList<>();
 			if (amount == -1) {
 				for (Announcement a : DatabaseManager.getManager().getAnnouncements(Long.valueOf(guildId))) {
 					JSONObject obj = new JSONObject();
@@ -208,7 +208,7 @@ public class AnnouncementEndpoint {
 					obj.put("SUBSCRIBERS_ROLE", a.getSubscriberRoleIds());
 					obj.put("SUBSCRIBERS_USER", a.getSubscriberUserIds());
 
-					announcements.add(obj.toString());
+					announcements.add(obj);
 				}
 			} else {
 				int i = 0;
@@ -227,7 +227,7 @@ public class AnnouncementEndpoint {
 						obj.put("SUBSCRIBERS_ROLE", a.getSubscriberRoleIds());
 						obj.put("SUBSCRIBERS_USER", a.getSubscriberUserIds());
 
-						announcements.add(obj.toString());
+						announcements.add(obj);
 						i++;
 					} else {
 						break;

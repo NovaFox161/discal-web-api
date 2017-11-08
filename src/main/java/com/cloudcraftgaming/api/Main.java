@@ -2,6 +2,7 @@ package com.cloudcraftgaming.api;
 
 import com.cloudcraftgaming.api.endpoints.v1.AnnouncementEndpoint;
 import com.cloudcraftgaming.api.endpoints.v1.GuildEndpoint;
+import com.cloudcraftgaming.api.endpoints.v1.RsvpEndpoint;
 import com.cloudcraftgaming.discal.api.database.DatabaseManager;
 import com.cloudcraftgaming.discal.api.file.ReadFile;
 import com.cloudcraftgaming.discal.api.object.BotSettings;
@@ -59,6 +60,9 @@ public class Main {
 			path("/calendar", () -> {
 				post("/get", CalendarEndpoint::getCalendar);
 				post("/list", CalendarEndpoint::listCalendars);
+			});
+			path("/rsvp", () -> {
+				post("/get", RsvpEndpoint::getRsvp);
 			});
 		});
 	}

@@ -63,6 +63,7 @@ public class Main {
 			});
 			path("/rsvp", () -> {
 				post("/get", RsvpEndpoint::getRsvp);
+				post("/update", RsvpEndpoint::updateRsvp);
 			});
 		});
 	}
